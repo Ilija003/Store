@@ -6,7 +6,7 @@ const data = {
       category: 'Basketball shoes',
       image: '/images/p1.webp',
       price: 150,
-      quantity: 15,
+      quantity: 0,
       brand: 'Nike',
       rating: 4.5,
       numOfReviews: 10,
