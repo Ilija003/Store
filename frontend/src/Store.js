@@ -3,10 +3,16 @@ import { createContext, useReducer } from 'react';
 export const Store = createContext();
 
 const initialState = {
-    userInfo: localStorage.getItem('userInfo')
+  userInfo: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
+  paymentMethod: localStorage.getItem('paymentMethod')
+    ? localStorage.getItem('paymentMethod')
+    : '',
   cart: {
+    shippingAddress: localStorage.getItem('shippingAddress')
+      ? JSON.parse(localStorage.getItem('shippingAddress'))
+      : {},
     itemsInCart: localStorage.getItem('itemsInCart')
       ? JSON.parse(localStorage.getItem('itemsInCart'))
       : [],
@@ -34,12 +40,32 @@ function reducer(state, action) {
       localStorage.setItem('itemsInCart', JSON.stringify(itemsInCart));
       return { ...state, cart: { ...state.cart, itemsInCart } };
     }
+    case 'CART_CLEAR':
+      return { ...state, cart: { ...state.cart, itemsInCart: [] } };
     case 'USER_SIGNIN':
       return { ...state, userInfo: action.payload };
     case 'USER_SIGNOUT':
       return {
         ...state,
         userInfo: null,
+        cart: {
+          itemsInCart: [],
+          shippingAddress: {},
+          paymentMethod: '',
+        },
+      };
+    case 'SAVE_SHIPPING_ADDRESS':
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          shippingAddress: action.payload,
+        },
+      };
+    case 'SAVE_PAYMENT_METHOD':
+      return {
+        ...state,
+        cart: { ...state.cart, paymentMethod: action.payload },
       };
     default:
       return state;
