@@ -31,6 +31,8 @@ import AdminRoute from './components/AdminRoute';
 import ProductListScreen from './screens/ProductListScreen';
 import EditProductScreen from './screens/EditProductScreen';
 import OrderListScreen from './screens/OrderListScreen';
+import UserListScreen from './screens/UserListScreen';
+import EditUserScreen from './screens/EditUserScreen';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -70,12 +72,12 @@ function App() {
           <Navbar style={{ backgroundColor: 'red' }} variant="dark" expand="lg">
             <Container>
               <Button
-                variant="dark"
+                variant="red"
                 onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
               >
                 <i className="fas fa-bars"></i>
               </Button>
-
+              &nbsp;
               <LinkContainer to="/">
                 <Navbar.Brand>shoestore</Navbar.Brand>
               </LinkContainer>
@@ -211,6 +213,14 @@ function App() {
                 }
               ></Route>
               <Route
+                path="/admin/users"
+                element={
+                  <AdminRoute>
+                    <UserListScreen />
+                  </AdminRoute>
+                }
+              ></Route>
+              <Route
                 path="/admin/products"
                 element={
                   <AdminRoute>
@@ -223,6 +233,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <EditProductScreen />
+                  </AdminRoute>
+                }
+              ></Route>
+               <Route
+                path="/admin/user/:id"
+                element={
+                  <AdminRoute>
+                    <EditUserScreen />
                   </AdminRoute>
                 }
               ></Route>
