@@ -34,6 +34,7 @@ import OrderListScreen from './screens/OrderListScreen';
 import UserListScreen from './screens/UserListScreen';
 import EditUserScreen from './screens/EditUserScreen';
 import MapScreen from './screens/MapScreen';
+import { FaShoppingCart } from 'react-icons/fa';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -48,6 +49,7 @@ function App() {
   };
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -57,7 +59,16 @@ function App() {
         toast.error(getError(err));
       }
     };
+    const fetchBrands = async () => {
+      try {
+        const { data } = await axios.get(`/api/products/brands`);
+        setBrands(data);
+      } catch (err) {
+        toast.error(getError(err));
+      }
+    };
     fetchCategories();
+    fetchBrands();
   }, []);
   return (
     <BrowserRouter>
@@ -91,7 +102,7 @@ function App() {
                 <SearchBox />
                 <Nav className="me-auto  w-100  justify-content-end">
                   <Link to="/cart" className="nav-link">
-                    Cart
+                    <FaShoppingCart />
                     {cart.itemsInCart.length > 0 && (
                       <Badge pill bg="danger">
                         {cart.itemsInCart.reduce((a, c) => a + c.amount, 0)}
@@ -159,6 +170,19 @@ function App() {
                   onClick={() => setSidebarIsOpen(false)}
                 >
                   <Nav.Link>{category}</Nav.Link>
+                </LinkContainer>
+              </Nav.Item>
+            ))}
+            <Nav.Item>
+              <strong>Brands</strong>
+            </Nav.Item>
+            {brands.map((brand) => (
+              <Nav.Item key={brand}>
+                <LinkContainer
+                  to={{ pathname: '/search', search: `?brand=${brand}` }}
+                  onClick={() => setSidebarIsOpen(false)}
+                >
+                  <Nav.Link>{brand}</Nav.Link>
                 </LinkContainer>
               </Nav.Item>
             ))}

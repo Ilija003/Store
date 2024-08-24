@@ -81,6 +81,8 @@ export default function SearchScreen() {
   const rating = sp.get('rating') || 'all';
   const order = sp.get('order') || 'newest';
   const page = sp.get('page') || 1;
+  const brand = sp.get('brand') || 'all';
+
 
   const [{ loading, error, products, pages, countProducts }, dispatch] =
     useReducer(reducer, {
@@ -88,22 +90,22 @@ export default function SearchScreen() {
       error: '',
     });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get(
-          `/api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}`
-        );
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
-      } catch (err) {
-        dispatch({
-          type: 'FETCH_FAIL',
-          payload: getError(error),
-        });
-      }
-    };
-    fetchData();
-  }, [category, error, order, page, price, query, rating]);
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const { data } = await axios.get(
+            `/api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}&brand=${brand}`
+          );
+          dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        } catch (err) {
+          dispatch({
+            type: 'FETCH_FAIL',
+            payload: getError(err),
+          });
+        }
+      };
+      fetchData();
+    }, [category, order, page, price, query, rating, brand]);
 
   const [categories, setCategories] = useState([]);
   useEffect(() => {
@@ -117,16 +119,31 @@ export default function SearchScreen() {
     };
     fetchCategories();
   }, [dispatch]);
-
-  const getFilterUrl = (filter) => {
-    const filterPage = filter.page || page;
-    const filterCategory = filter.category || category;
-    const filterQuery = filter.query || query;
-    const filterRating = filter.rating || rating;
-    const filterPrice = filter.price || price;
-    const sortOrder = filter.order || order;
-    return `/search?category=${filterCategory}&query=${filterQuery}&price=${filterPrice}&rating=${filterRating}&order=${sortOrder}&page=${filterPage}`;
+  const [brands, setBrands] = useState([]);
+useEffect(() => {
+  const fetchBrands = async () => {
+    try {
+      const { data } = await axios.get(`/api/products/brands`);
+      setBrands(data);
+    } catch (err) {
+      toast.error(getError(err));
+    }
   };
+  fetchBrands();
+}, []);
+
+
+const getFilterUrl = (filter) => {
+  const filterPage = filter.page || page;
+  const filterCategory = filter.category || category;
+  const filterQuery = filter.query || query;
+  const filterRating = filter.rating || rating;
+  const filterPrice = filter.price || price;
+  const filterBrand = filter.brand || brand;  // Dodaj brend
+  const sortOrder = filter.order || order;
+  return `/search?category=${filterCategory}&query=${filterQuery}&price=${filterPrice}&rating=${filterRating}&order=${sortOrder}&page=${filterPage}&brand=${filterBrand}`;
+};
+
   return (
     <div>
       <Helmet>
@@ -157,6 +174,29 @@ export default function SearchScreen() {
               ))}
             </ul>
           </div>
+          <div>
+    <h3>Brands</h3>
+    <ul>
+      <li>
+        <Link
+          className={'all' === brand ? 'text-bold' : ''}
+          to={getFilterUrl({ brand: 'all' })}
+        >
+          Any
+        </Link>
+      </li>
+      {brands.map((b) => (
+        <li key={b}>
+          <Link
+            className={b === brand ? 'text-bold' : ''}
+            to={getFilterUrl({ brand: b })}
+          >
+            {b}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
           <div>
             <h3>Price</h3>
             <ul>
