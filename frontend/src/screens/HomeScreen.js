@@ -36,8 +36,6 @@ function HomeScreen() {
       } catch (ex) {
         dispatch({ type: 'FETCH_FAIL', payload: ex.message });
       }
-
-      // setProducts(result.data);
     };
     fetchData();
   }, []);
